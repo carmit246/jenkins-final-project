@@ -110,10 +110,10 @@ EOF
     if (status != 200 && status != 201) {
       //slackSend color: "#FF0000", message: "CI/CD flow Finished with Error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
       error("Returned status code = $status when calling $lb")
-}
+    }
     echo "test status: ${status}"
-    //slackSend color: "#00FF00", message: "CI/CD flow Finished Successfully: ${env.JOB_NAME} #${env.BUILD_NUMBER}. Application is available on http://${lb}."
+    slackSend color: "#00FF00", message: "CI/CD flow Finished Successfully: ${env.JOB_NAME} #${env.BUILD_NUMBER}. Application is available on http://${lb}."
     //test_result = sh """curl http://load-balancer"""
-    
+  }
   }
 }

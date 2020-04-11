@@ -12,7 +12,7 @@ node("final-project-slave"){
 
   stage("Create Docker Image") {
     //Dockerfile
-    app = docker.build("carmitbe1/final-opsschool-project") //${env.BUILD_ID}
+    app = docker.build("carmitbe1/opsschool-final-project") //${env.BUILD_ID}
   }
 
   stage("verify Docker Image") 

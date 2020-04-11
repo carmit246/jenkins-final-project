@@ -3,12 +3,16 @@ Created on Jan 10, 2017
 
 @author: hanif
 '''
-
+import os
 import pymysql
 
 class Database:
     def connect(self):
-        return pymysql.connect("phonebook-mysql","mysqluser","projectdb","crud_flask" )
+        db_host = os.environ['DB_HOST']
+        db_user = os.environ['DB_USER']
+        db_pass = os.environ['DB_PASS']
+        #return pymysql.connect("phonebook-mysql","mysqluser","projectdb","crud_flask" )
+        return pymysql.connect("db_host","db_user","db_pass","crud_flask" )
 
     def read(self, id):
         con = Database.connect(self)

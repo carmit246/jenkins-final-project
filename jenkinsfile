@@ -1,0 +1,112 @@
+node("project-slave"){
+  stage("Get Repo") {
+    checkout scm
+  }
+  
+  stage("Create DB"){
+    db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
+     echo "db_host: ${db_host}"
+    withCredentials([usernamePassword(credentialsId: 'mysqluser', passwordVariable: 'dbpass', usernameVariable: 'dbuser')]) {
+        sh "mysql -h 10.0.1.237 -u $dbuser -p$dbpass -v < /home/ubuntu/crud_flask.sql"        
+      }
+      
+  stage("Create Docker Image") {
+    //Dockerfile
+    app = docker.build("carmitbe1/final-opsschool-project")
+  }
+
+  stage("verify Docker Image") 
+  {
+    sh "docker images"
+    //docker.image('carmitbe1/opsschool-project').withRun('-p 80:80'){c -> 
+    //int container_status = sh """curl -i http://localhost"""
+    //if (container_status != 200 && container_status != 201) {
+    //  slackSend color: "red", message: "docker build finished with error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+    //  error("docker build returned status code = $container_status")
+    //}
+    //echo "docker build test status: ${container_status}"
+    //} 
+  }
+
+  stage("Push to DockerHub") {
+    withDockerRegistry(credentialsId: 'dockerhub.carmitbe1', url: '') 
+    {
+      app.push()
+    }
+  }
+
+  stage("Prepare K8S yaml file") {
+    sh """
+      tee /home/ubuntu/final-project-pod.yml <<-'EOF'
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: opsschool-final-project
+  labels:
+    app: opsschool-final-project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opsschool-final-project
+  template:
+    metadata:
+      labels:
+        app: opsschool-final-project
+    spec:     
+      containers:
+      - name: opsschool-final-project
+        image: carmitbe1/opsschool-final-project
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:  
+  name: opsschool-final-project
+spec:
+  selector:    
+    app: opsschool-final-project
+  type: LoadBalancer
+  ports:  
+  - name: http
+    port: 80
+    targetPort: 80
+    nodePort: 30036
+    protocol: TCP
+EOF
+            """
+      echo "build"           
+  }
+  stage("Deploy in K8s") {                
+    script {
+      try{
+        //kubernetesDeploy configs: 'ttt.yml', kubeConfig: [path: ''], kubeconfigId: 'k8s-test', secretName: '', ssh: [sshCredentialsId: '*', sshServer: ''], textCredentials: [certificateAuthorityData: '', clientCertificateData: '', clientKeyData: '', serverUrl: 'https://']
+        sh """kubectl apply -f /home/ubuntu/final-project-pod.yml > /home/ubuntu/startPod.log"""
+        echo "try"
+      }catch(error){
+        echo "catch"                  
+      }
+    }        
+  }
+  stage("Test") {
+    sh """kubectl get pods > /home/ubuntu/getPods.log"""
+    sh """/home/ubuntu/lb.sh > /home/ubuntu/lb.txt"""
+    //var lb = sh """kubectl get svc| grep opsschool-project| awk '{print $4}'"""
+    lb = readFile('/home/ubuntu/lb.txt').trim()
+
+    echo "lb: ${lb}"
+    //load_balancer = sh(script: "kubectl get svc| grep project| awk '{print $3}", returnStdout: true)
+    //sh """curl -Ls $lb"""
+    int status = sh(script: "curl -sLI -w '%{http_code}' http://${lb} -o /dev/null", returnStdout: true)
+    
+    if (status != 200 && status != 201) {
+      slackSend color: "#FF0000", message: "CI/CD flow Finished with Error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+      error("Returned status code = $status when calling $lb")
+}
+    echo "test status: ${status}"
+    slackSend color: "#00FF00", message: "CI/CD flow Finished Successfully: ${env.JOB_NAME} #${env.BUILD_NUMBER}. Application is available on http://${lb}."
+    //test_result = sh """curl http://load-balancer"""
+    
+  }
+}

@@ -11,11 +11,8 @@ class Database:
         db_host = os.environ['DB_HOST']
         db_user = os.environ['DB_USER']
         db_pass = os.environ['DB_PASS']
-	print(db_host)
-	print(db_user)
-	print(db_pass)
-        #return pymysql.connect("phonebook-mysql","mysqluser","projectdb","crud_flask" )
-        return pymysql.connect("db_host","db_user","db_pass","crud_flask" )
+	#return pymysql.connect("phonebook-mysql","mysqluser","projectdb","crud_flask" )
+        return pymysql.connect(db_host,db_user,db_pass,"crud_flask" )
 
     def read(self, id):
         con = Database.connect(self)

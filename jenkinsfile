@@ -7,7 +7,7 @@ node("project-slave"){
     db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
      echo "db_host: ${db_host}"
     withCredentials([usernamePassword(credentialsId: 'mysqluser', passwordVariable: 'dbpass', usernameVariable: 'dbuser')]) {
-        sh "mysql -h 10.0.1.237 -u $dbuser -p$dbpass -v < /home/ubuntu/crud_flask.sql"        
+        sh "mysql -h ${db_host} -u $dbuser -p$dbpass -v < /home/ubuntu/crud_flask.sql"        
       }
 
   stage("Create Docker Image") {

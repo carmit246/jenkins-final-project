@@ -108,7 +108,7 @@ EOF
     int status = sh(script: "curl -sLI -w '%{http_code}' http://${lb} -o /dev/null", returnStdout: true)
     
     if (status != 200 && status != 201) {
-      //slackSend color: "#FF0000", message: "CI/CD flow Finished with Error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+      slackSend color: "#FF0000", message: "CI/CD flow Finished with Error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
       error("Returned status code = $status when calling $lb")
     }
     echo "test status: ${status}"

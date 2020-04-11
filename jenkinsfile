@@ -1,4 +1,4 @@
-node("final-project-slave"){
+node("opsschool-final-project-slave"){
   stage("Get Repo") {
     checkout scm
   }

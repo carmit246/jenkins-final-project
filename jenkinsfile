@@ -117,7 +117,7 @@ EOF
    timeout(30) {
     waitUntil {
         response = sh(
-            script: 'curl -sLI -w '%{http_code}' http://${lb} -o /dev/null| grep 200',
+            script: "curl -sLI -w '%{http_code}' http://${lb} -o /dev/null| grep 200",
             returnStatus: true
         )
         return (response == 0)

@@ -112,14 +112,24 @@ EOF
     //load_balancer = sh(script: "kubectl get svc| grep project| awk '{print $3}", returnStdout: true)
     //sh """curl -Ls $lb"""
     
-    timeout(3600) {
+
+   def response
+   timeout(30) {
     waitUntil {
-       script {
-         def r = sh script: "curl -sLI -w '%{http_code}' http://${lb} -o /dev/null", returnStdout: true
-         return (r == 200);
-       }
-    }
-   }   
+        response = sh(
+            script: 'curl -sLI -w '%{http_code}' http://${lb} -o /dev/null| grep 200',
+            returnStatus: true
+        )
+        return (response == 0)
+      }
+   }
+
+  if (response != 0) {
+      echo "FAILED!!"
+      build.result = 'ERROR'
+  }
+
+
     int status = sh(script: "curl -sLI -w '%{http_code}' http://${lb} -o /dev/null", returnStdout: true)
     
     if (status != 200 && status != 201) {

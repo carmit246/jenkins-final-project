@@ -6,10 +6,7 @@ Created on Jan 10, 2017
 
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from module.database import Database
-from prometheus_client import make_wsgi_app
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from werkzeug.serving import run_simple
-from flask_prometheus_metrics import register_metrics
+from flask_prometheus import monitor 
 
 app = Flask(__name__)
 app.secret_key = "mys3cr3tk3y"
@@ -94,9 +91,5 @@ def page_not_found(error):
     return render_template('error.html')
 
 if __name__ == '__main__':
-    # provide app's version and deploy environment/config name to set a gauge metric
-    register_metrics(app, app_version="v0.1.2", app_config="prod")
-    # Plug metrics WSGI app to your main app with dispatcher
-    dispatcher = DispatcherMiddleware(app.wsgi_app, {"/metrics": make_wsgi_app()})	
-
+    monitor(app, port=8000)
     app.run(port=80, host="0.0.0.0")

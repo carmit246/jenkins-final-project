@@ -1,11 +1,4 @@
 flask
 pymysql
-click
-flask-prometheus-metrics
-itsdangerous
-Jinja2
-MarkupSafe
-pkg-resources
-prometheus-client
-Werkzeug
-
+prometheus_client
+flask_prometheus_metrics

@@ -7,30 +7,10 @@ Created on Jan 10, 2017
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 from module.database import Database
 from flask_prometheus import monitor 
-from elasticapm.contrib.flask import ElasticAPM
 
 app = Flask(__name__)
 app.secret_key = "mys3cr3tk3y"
 db = Database()
-# or configure to use ELASTIC_APM in your 
-# application's settings
-#
-app.config['ELASTIC_APM'] = {
-  # Set required service name. 
-  # Allowed characters:
-  # a-z, A-Z, 0-9, -, _, and space
-  'SERVICE_NAME': 'PhoneBook',
-
-  # Use if APM Server requires a token
-  'SECRET_TOKEN': '',
-
-  # Set custom APM Server URL (
-  # default: http://localhost:8200)
-  #
-  'SERVER_URL': 'http://localhost:8200',
-}
-
-apm = ElasticAPM(app)
 
 @app.route('/')
 def index():
@@ -112,4 +92,4 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     monitor(app, port=8000)
-    app.run(port=8080, host="0.0.0.0")
+    app.run(port=80, host="0.0.0.0")

@@ -108,6 +108,7 @@ EOF
     }        
   }
   stage("Test") {
+    sh 'sleep 120'
     sh """kubectl get pods > /home/ubuntu/getPods.log"""
     sh """/home/ubuntu/lb.sh > /home/ubuntu/lb.txt"""
     //var lb = sh """kubectl get svc| grep opsschool-project| awk '{print $4}'"""

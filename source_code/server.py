@@ -8,10 +8,13 @@ from flask import Flask, flash, render_template, redirect, url_for, request, ses
 from module.database import Database
 from flask_prometheus import monitor 
 from elasticapm.contrib.flask import ElasticAPM
+import os
 
 app = Flask(__name__)
 app.secret_key = "mys3cr3tk3y"
 db = Database()
+elk_host = os.environ['ELK_HOST']
+elk_url = "http://%s:8200" % (elk_host)
 # or configure to use ELASTIC_APM in your 
 # application's settings
 #
@@ -27,7 +30,7 @@ app.config['ELASTIC_APM'] = {
   # Set custom APM Server URL (
   # default: http://localhost:8200)
   #
-  'SERVER_URL': 'http://localhost:8200',
+  'SERVER_URL': elk_url,
 }
 
 apm = ElasticAPM(app)

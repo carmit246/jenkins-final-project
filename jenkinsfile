@@ -36,6 +36,9 @@ node("opsschool-final-project-slave"){
   }
 
   stage("Prepare K8S yaml file") {
+
+    elk_host = readFile('/home/ubuntu/elk_hostname.txt').trim()
+     echo "elk_host: ${elk_host}"
     sh """
       tee /home/ubuntu/final-project-pod.yml <<-'EOF'
 apiVersion: apps/v1
@@ -64,6 +67,8 @@ spec:
           value: "mysqluser"
         - name: DB_PASS
           value: "projectdb"
+        - name: ELK_HOST
+          value: "${elk_host}"
         ports:
         - containerPort: 80
         - containerPort: 8000

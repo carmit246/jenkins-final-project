@@ -1,4 +1,5 @@
 flask
 pymysql
+sentry-sdk
 flask_prometheus
 elastic-apm

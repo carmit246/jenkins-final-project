@@ -112,4 +112,4 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     monitor(app, port=8000)
-    app.run(port=8080, host="0.0.0.0")
+    app.run(port=80, host="0.0.0.0")

@@ -4,7 +4,8 @@ node("opsschool-final-project-slave"){
   }
   
   stage("Create DB"){
-    db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
+     db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
+     //db_host = "mysql.service.consul"
      echo "db_host: ${db_host}"
     withCredentials([usernamePassword(credentialsId: 'mysqluser', passwordVariable: 'dbpass', usernameVariable: 'dbuser')]) {
         sh "mysql -h ${db_host} -u $dbuser -p$dbpass -v < /home/ubuntu/crud_flask.sql"        
@@ -62,7 +63,7 @@ spec:
         image: carmitbe1/opsschool-final-project:${env.BUILD_ID}
         env:
         - name: DB_HOST
-          value: "${db_host}"
+          value: "mysql.service.consul"
         - name: DB_USER
           value: "mysqluser"
         - name: DB_PASS

@@ -63,7 +63,7 @@ spec:
         image: carmitbe1/opsschool-final-project:${env.BUILD_ID}
         env:
         - name: DB_HOST
-          value: "mysql" 
+          value: "${db_host}" 
         - name: DB_USER
           value: "mysqluser"
         - name: DB_PASS
@@ -133,6 +133,7 @@ EOF
 
   if (response != 0) {
       echo "FAILED!!"
+      slackSend color: "#FF0000", message: "CI/CD flow Finished with Error: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
       build.result = 'ERROR'
   }
 

@@ -63,13 +63,13 @@ spec:
         image: carmitbe1/opsschool-final-project:${env.BUILD_ID}
         env:
         - name: DB_HOST
-          value: "mysql.service.consul" 
+          value: "mysql" 
         - name: DB_USER
           value: "mysqluser"
         - name: DB_PASS
           value: "projectdb"
         - name: ELK_HOST
-          value: "apm-server.service.consul"
+          value: "apm-server"
         ports:
         - containerPort: 80
         - containerPort: 8000

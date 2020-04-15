@@ -14,7 +14,8 @@ app = Flask(__name__)
 app.secret_key = "mys3cr3tk3y"
 db = Database()
 elk_host = os.environ['ELK_HOST']
-elk_url = "http://%s:8200" % (elk_host)
+elk_url = "http://apm-server:8200"
+#elk_url = "http://%s:8200" % (elk_host)
 # or configure to use ELASTIC_APM in your 
 # application's settings
 #

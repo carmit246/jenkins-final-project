@@ -65,11 +65,21 @@ spec:
       - name: opsschool-final-project
         image: carmitbe1/opsschool-final-project:${env.BUILD_ID}
         env:
+        - name: DB_USER
+            valueFrom:
+            secretKeyRef:
+              name: project-db-credentials
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: project-db-credentials
+              key: password
         - name: DB_HOST
           value: "mysql" 
-        - name: DB_USER
+        - name: OLD_DB_USER
           value: "mysqluser"
-        - name: DB_PASS
+        - name: OLD_DB_PASS
           value: "projectdb"
         - name: ELK_HOST
           value: "apm-server"

@@ -39,8 +39,10 @@ node("opsschool-final-project-slave"){
 
   stage("Prepare K8S yaml file") {
 
-    elk_host = readFile('/home/ubuntu/elk_hostname.txt').trim()
-     echo "elk_host: ${elk_host}"
+    //elk_host = readFile('/home/ubuntu/elk_hostname.txt').trim()
+    //echo "elk_host: ${elk_host}"
+    withCredentials([usernamePassword(credentialsId: 'mysqluser', passwordVariable: 'dbpass', usernameVariable: 'dbuser')]) {
+    sh "kubectl create secret generic project-db-credentials --from-literal=username=$dbuser --from-literal=password=$dbpass"
     sh """
       tee /home/ubuntu/final-project-pod.yml <<-'EOF'
 apiVersion: apps/v1
@@ -97,6 +99,7 @@ spec:
 EOF
             """
       echo "build"           
+  }
   }
   stage("Deploy in K8s") {                
     script {

@@ -4,8 +4,9 @@ node("opsschool-final-project-slave"){
   }
   
   stage("Create DB"){
-     db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
+     //db_host = readFile('/home/ubuntu/db_hostname.txt').trim()
      //db_host = "mysql.service.consul"
+     db_host = "mysql.service.consul"
      echo "db_host: ${db_host}"
     withCredentials([usernamePassword(credentialsId: 'mysqluser', passwordVariable: 'dbpass', usernameVariable: 'dbuser')]) {
         sh "mysql -h ${db_host} -u $dbuser -p$dbpass -v < /home/ubuntu/crud_flask.sql"        
@@ -147,6 +148,11 @@ EOF
     echo "test status: ${status}"
     slackSend color: "#00FF00", message: "CI/CD flow Finished Successfully: ${env.JOB_NAME} #${env.BUILD_NUMBER}. Application is available on http://${lb}."
     //test_result = sh """curl http://load-balancer"""
+  }
+
+  stage("Load test") {
+    sh 'echo ${lb} > /home/ubuntu/apache-jmeter-5.2.1/project_lb.csv'
+    sh '/home/ubuntu/apache-jmeter-5.2.1/bin/jmeter.sh -n -t /home/ubuntu/opsschool-final-project.jmx -l /home/ubuntu/opsschool-final-project.txt -e -o /home/ubuntu/opsschool-final-project-results'
   }
   }
 }

@@ -157,7 +157,8 @@ EOF
   }
 
   stage("Load test") {
-    sh 'sudo echo opsschool-final-project-default.service.consul > /home/ubuntu/apache-jmeter-5.2.1/project_lb.csv'
+    sh 'echo opsschool-final-project-default.service.consul > /home/ubuntu/project_lb.csv'
+    sh 'sudo cp /home/ubuntu/project_lb.csv /home/ubuntu/apache-jmeter-5.2.1'
     sh '/home/ubuntu/apache-jmeter-5.2.1/bin/jmeter.sh -n -t /home/ubuntu/opsschool-final-project.jmx -l /home/ubuntu/opsschool-final-project.txt -e -o /home/ubuntu/opsschool-final-project-results'
   }
   }
